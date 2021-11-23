@@ -119,7 +119,7 @@ const createHUD = (actor) => {
 
     btn.appendChild(statusEffects);
 
-    return [btn, inspireCourage, inspireHeroics, inspireHeroicsCrit];
+    return [btn, statusEffects, inspireCourage, inspireHeroics, inspireHeroicsCrit];
 };
 
 export const renderTokenHUD = (hud, html, token) => {
@@ -128,9 +128,10 @@ export const renderTokenHUD = (hud, html, token) => {
     if (game.settings.get('pf2e-bardic-inspiration', 'add-inspiration-buttons') && actor.data.type.toLowerCase() === 'character') {
         const views = createHUD(actor);
         const button = views[0];
+        const statusEffects = views[1];
 
         $(button).click((event) => tokenButtonHandler(event, actor, token));
-        for (var i = 1; i < views.length; i++) {
+        for (var i = 2; i < views.length; i++) {
             $(views[i]).on('mouseover mouseout', (event) => mouseoverHandler(event));
             $(views[i]).contextmenu((event) => 
                 effectButtonHandler(event, actor)
