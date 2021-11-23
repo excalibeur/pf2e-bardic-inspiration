@@ -1,0 +1,6 @@
+Images:
+- inspire-courage-base.png
+- inspire-courage-reg.png
+- inspire-courage-heroics-success.png
+- inspire-courage-heroics-crit.png
+Adapted from icon at https://icon-library.com/icon/sword-png-icon-18.html.

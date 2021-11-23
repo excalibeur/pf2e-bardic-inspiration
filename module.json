@@ -1,0 +1,18 @@
+{
+  "name": "pf2e-bardic-inspiration",
+  "title": "Pathfinder 2e Bardic Inspiration",
+  "description": "Adds buttons to the token HUD that enable controlling bonuses from different Bardic Inspirations.",
+  "author": "Excalibeur",
+  "version": "1.0.0",
+  "minimumCoreVersion": "0.8.6",
+  "compatibleCoreVersion": "0.8.9",  
+  "esmodules": ["scripts/pf2e-bardic-inspiration.js"],
+  "languages": [
+    {
+			"lang": "en",
+			"name": "English",
+			"path": "lang/en.json"
+		}
+  ],
+  "systems": ["pf2e"]
+}
