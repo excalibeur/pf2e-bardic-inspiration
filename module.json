@@ -9,10 +9,14 @@
   "esmodules": ["scripts/pf2e-bardic-inspiration.js"],
   "languages": [
     {
-			"lang": "en",
-			"name": "English",
-			"path": "lang/en.json"
-		}
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
   ],
-  "systems": ["pf2e"]
+  "systems": ["pf2e"],
+  "changelog": "https://github.com/excalibeur/pf2e-bardic-inspiration/releases",
+  "download": "https://github.com/excalibeur/pf2e-bardic-inspiration/releases/download/1.0.0/module.zip",
+  "manifest": "https://github.com/excalibeur/pf2e-bardic-inspiration/releases/download/1.0.0/module.json",
+  "readme": "https://github.com/excalibeur/pf2e-bardic-inspiration/blob/main/README.md"
 }
