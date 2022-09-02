@@ -1,11 +1,16 @@
+// Names of the effects in the foundry VTT database
 const inspireCourageEffectName = "Inspire Courage"
-const inspireHeroicsEffectName = "Inspire Heroics (Courage, +2)";
-const inspireHeroicsCriticalEffectName = "Inspire Heroics (Courage, +3)";
+const inspireCourageHeroicsEffectName = "Inspire Heroics (Courage, +2)";
+const inspireCourageHeroicsCriticalEffectName = "Inspire Heroics (Courage, +3)";
+const inspireDefenseEffectName = "Inspire Defense"
+const inspireDefenseHeroicsEffectName = "Inspire Heroics (Defense, +2)";
+const inspireDefenseHeroicsCriticalEffectName = "Inspire Heroics (Defense, +3)";
 
 const effectIdAttribute = '_effect-id';
 const exclusiveEffects = [
     // Keep all 3 inspire courage effects exclusive to each other.
-    [inspireCourageEffectName, inspireHeroicsEffectName, inspireHeroicsCriticalEffectName]
+    [inspireCourageEffectName, inspireCourageHeroicsEffectName, inspireCourageHeroicsCriticalEffectName],
+    [inspireDefenseEffectName, inspireDefenseHeroicsEffectName, inspireDefenseHeroicsCriticalEffectName]
 ];
 
 
@@ -13,6 +18,8 @@ const getSpell = async (spell) => {
     const spellEffectPack = game.packs.get('pf2e.spell-effects');
     await spellEffectPack.getIndex();
     const spellEntry = spellEffectPack.index.find(e => e.name.includes(spell));
+    console.log("spell entry: for name:" + spell);
+    console.log(JSON.stringify(spellEntry));
     return await spellEffectPack.getDocument(spellEntry._id);
 }
 
@@ -79,6 +86,39 @@ const effectButtonHandler = async (event, actor) => {
     updateHUD(hud, actor);
 }
 
+const buttons = [
+    {
+        title: 'pf2e_bardic_inspiration.inspire_courage',
+        src: 'modules/pf2e-bardic-inspiration/artwork/inspire-courage-reg.png',
+        effectId: inspireCourageEffectName
+    },
+    {
+        title: 'pf2e_bardic_inspiration.inspire_courage_heroics_success',
+        src: 'modules/pf2e-bardic-inspiration/artwork/inspire-courage-heroics-success.png',
+        effectId: inspireCourageHeroicsEffectName
+    },
+    {
+        title: 'pf2e_bardic_inspiration.inspire_courage_heroics_critical',
+        src: 'modules/pf2e-bardic-inspiration/artwork/inspire-courage-heroics-crit.png',
+        effectId: inspireCourageHeroicsCriticalEffectName
+    },
+    {
+        title: 'pf2e_bardic_inspiration.inspire_defense',
+        src: 'modules/pf2e-bardic-inspiration/artwork/inspire-defense-reg.png',
+        effectId: inspireDefenseEffectName
+    },
+    {
+        title: 'pf2e_bardic_inspiration.inspire_defense_heroics_success',
+        src: 'modules/pf2e-bardic-inspiration/artwork/inspire-defense-heroics-success.png',
+        effectId: inspireDefenseHeroicsEffectName
+    },
+    {
+        title: 'pf2e_bardic_inspiration.inspire_defense_heroics_critical',
+        src: 'modules/pf2e-bardic-inspiration/artwork/inspire-defense-heroics-crit.png',
+        effectId: inspireDefenseHeroicsCriticalEffectName
+    }
+]
+
 const createHUD = (actor) => {
     const btn = document.createElement('div');
     btn.title = game.i18n.localize('pf2e_bardic_inspiration.inspire_base');
@@ -91,35 +131,28 @@ const createHUD = (actor) => {
     const statusEffects = document.createElement('div');
     statusEffects.className = 'status-effects';
 
-    const inspireCourage = document.createElement('img');
-    inspireCourage.className = 'control-icon';
-    // For some reason the first child by default loses its margin, so add it back in here
-    inspireCourage.style.marginTop = '2px';
-    inspireCourage.title = game.i18n.localize('pf2e_bardic_inspiration.inspire_courage');
-    inspireCourage.src = 'modules/pf2e-bardic-inspiration/artwork/inspire-courage-reg.png';
-    inspireCourage.setAttribute(effectIdAttribute, inspireCourageEffectName);
-
-    const inspireHeroics = document.createElement('img');
-    inspireHeroics.className = 'control-icon';
-    inspireCourage.style.margin = 2;
-    inspireHeroics.title = game.i18n.localize('pf2e_bardic_inspiration.inspire_heroics_success');
-    inspireHeroics.src = 'modules/pf2e-bardic-inspiration/artwork/inspire-courage-heroics-success.png';
-    inspireHeroics.setAttribute(effectIdAttribute, inspireHeroicsEffectName);
-
-    const inspireHeroicsCrit = document.createElement('img');
-    inspireHeroicsCrit.className = 'control-icon';
-    inspireCourage.style.margin = 2;
-    inspireHeroicsCrit.title = game.i18n.localize('pf2e_bardic_inspiration.inspire_heroics_critical');
-    inspireHeroicsCrit.src = 'modules/pf2e-bardic-inspiration/artwork/inspire-courage-heroics-crit.png';
-    inspireHeroicsCrit.setAttribute(effectIdAttribute, inspireHeroicsCriticalEffectName);
-
-    statusEffects.appendChild(inspireCourage);
-    statusEffects.appendChild(inspireHeroics);
-    statusEffects.appendChild(inspireHeroicsCrit);
+    const elems = [];
+    var isFirst = true;
+    for (var i = 0; i < buttons.length; i++) {
+        const uiButton = buttons[i];
+        const elem = document.createElement('img');
+        elem.className = 'control-icon';
+        if (isFirst) {
+            elem.style.marginTop = '2px';
+            isFirst = false;
+        } else {
+            elem.style.margin = 2;
+        }
+        elem.title = game.i18n.localize(uiButton.title);
+        elem.src = uiButton.src;
+        elem.setAttribute(effectIdAttribute, uiButton.effectId);
+        elems.push(elem);
+        statusEffects.appendChild(elem);
+    }
 
     btn.appendChild(statusEffects);
 
-    return [btn, statusEffects, inspireCourage, inspireHeroics, inspireHeroicsCrit];
+    return [btn, statusEffects, elems];
 };
 
 export const renderTokenHUD = (hud, html, token) => {
@@ -129,13 +162,14 @@ export const renderTokenHUD = (hud, html, token) => {
         const views = createHUD(actor);
         const button = views[0];
         const statusEffects = views[1];
+        const statusButtons = views[2];
 
         $(button).click((event) => tokenButtonHandler(event, actor, token));
-        for (var i = 2; i < views.length; i++) {
-            $(views[i]).on('mouseover mouseout', (event) => mouseoverHandler(event));
-            $(views[i]).contextmenu((event) => 
+        for (var i = 0; i < statusButtons.length; i++) {
+            $(statusButtons[i]).on('mouseover mouseout', (event) => mouseoverHandler(event));
+            $(statusButtons[i]).contextmenu((event) =>
                 effectButtonHandler(event, actor)
-            ).click((event) => 
+            ).click((event) =>
                 effectButtonHandler(event, actor)
             )
         }
