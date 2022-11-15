@@ -18,13 +18,11 @@ const getSpell = async (spell) => {
     const spellEffectPack = game.packs.get('pf2e.spell-effects');
     await spellEffectPack.getIndex();
     const spellEntry = spellEffectPack.index.find(e => e.name.includes(spell));
-    console.log("spell entry: for name:" + spell);
-    console.log(JSON.stringify(spellEntry));
     return await spellEffectPack.getDocument(spellEntry._id);
 }
 
 const getSpellEffectFromActor = (actor, spell) => {
-    return (actor.data).items.filter(item => item.name.includes(spell) && item.type === 'effect');
+    return actor.items.filter(item => item.name.includes(spell) && item.type === 'effect');
 }
 
 const tokenButtonHandler = async (event, actor, token) => {
@@ -33,10 +31,10 @@ const tokenButtonHandler = async (event, actor, token) => {
     btn.find("div.status-effects").toggleClass('active');
 };
 
-const removeEffect = (effectName, actor) => {
+const removeEffect = async (effectName, actor) => {
     const effect = getSpellEffectFromActor(actor, effectName);
     if (effect.length) {
-        actor.deleteEmbeddedDocuments('Item', effect.map(i => i.id));
+        await actor.deleteEmbeddedDocuments('Item', effect.map(i => i.id));
     }
 }
 
@@ -46,7 +44,7 @@ const mouseoverHandler = async (event) => {
 }
 
 const updateHUD = async (html, actor) => {
-    const $statusIcons = html.find("img.control-icon");
+    const $statusIcons = html.find("picture.effect-control");
     for (const icon of $statusIcons) {
         const $icon = $(icon);
         const effectName = $icon.attr(effectIdAttribute);
@@ -66,21 +64,21 @@ const effectButtonHandler = async (event, actor) => {
     const effect = getSpellEffectFromActor(actor, effectName);
     const hud = btn.parent();
     if (effect.length) {
-        removeEffect(effectName, actor);
+        await removeEffect(effectName, actor);
     } else {
         // Remove exclusive effects first
         for (var i = 0; i < exclusiveEffects.length; i++) {
             const exclusiveSet = exclusiveEffects[i];
             if (exclusiveSet.includes(effectName)) {
                 for (var j = 0; j < exclusiveSet.length; j++) {
-                    removeEffect(exclusiveSet[j], actor);
+                    await removeEffect(exclusiveSet[j], actor);
                 }
                 break;
             }
         }
-        const effects = await actor.createEmbeddedDocuments('Item', [effectItem.data]);
-        const effect = effects.find(e => e.data.name === effectItem.data.name);
-        const update = { _id: effect.data._id, data: { expired: false, duration: { unit: 'unlimited' } } };
+        const effects = await actor.createEmbeddedDocuments('Item', [effectItem]);
+        const effect = effects.find(e => e.name === effectItem.name);
+        const update = { _id: effect._id, data: { expired: false, duration: { unit: 'unlimited' } } };
         actor.updateEmbeddedDocuments('Item', [update]);
     }
     updateHUD(hud, actor);
@@ -135,7 +133,11 @@ const createHUD = (actor) => {
     var isFirst = true;
     for (var i = 0; i < buttons.length; i++) {
         const uiButton = buttons[i];
+        const picture = document.createElement("picture");
+        picture.className = 'effect-control';
+        picture.title = game.i18n.localize(uiButton.title);
         const elem = document.createElement('img');
+        picture.appendChild(elem);
         elem.className = 'control-icon';
         if (isFirst) {
             elem.style.marginTop = '2px';
@@ -143,11 +145,10 @@ const createHUD = (actor) => {
         } else {
             elem.style.margin = 2;
         }
-        elem.title = game.i18n.localize(uiButton.title);
         elem.src = uiButton.src;
-        elem.setAttribute(effectIdAttribute, uiButton.effectId);
-        elems.push(elem);
-        statusEffects.appendChild(elem);
+        picture.setAttribute(effectIdAttribute, uiButton.effectId);
+        elems.push(picture);
+        statusEffects.appendChild(picture);
     }
 
     btn.appendChild(statusEffects);
@@ -158,7 +159,7 @@ const createHUD = (actor) => {
 export const renderTokenHUD = (hud, html, token) => {
     const actor = game.actors.get(token.actorId);
 
-    if (game.settings.get('pf2e-bardic-inspiration', 'add-inspiration-buttons') && actor.data.type.toLowerCase() === 'character') {
+    if (game.settings.get('pf2e-bardic-inspiration', 'add-inspiration-buttons') && actor.type.toLowerCase() === 'character') {
         const views = createHUD(actor);
         const button = views[0];
         const statusEffects = views[1];
