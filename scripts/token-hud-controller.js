@@ -1,8 +1,8 @@
 // Names of the effects in the foundry VTT database
-const inspireCourageEffectName = "Inspire Courage"
+const inspireCourageEffectName = "Courageous Anthem"
 const inspireCourageHeroicsEffectName = "Inspire Heroics (Courage, +2)";
 const inspireCourageHeroicsCriticalEffectName = "Inspire Heroics (Courage, +3)";
-const inspireDefenseEffectName = "Inspire Defense"
+const inspireDefenseEffectName = "Rallying Anthem"
 const inspireDefenseHeroicsEffectName = "Inspire Heroics (Defense, +2)";
 const inspireDefenseHeroicsCriticalEffectName = "Inspire Heroics (Defense, +3)";
 

@@ -1,9 +1,9 @@
 {
     "pf2e_bardic_inspiration.inspire_base": "Bardic Inspiration",
-    "pf2e_bardic_inspiration.inspire_courage": "Inspire Courage",
+    "pf2e_bardic_inspiration.inspire_courage": "Courageous Anthem",
     "pf2e_bardic_inspiration.inspire_courage_heroics_success": "Inspire Courage +2",
     "pf2e_bardic_inspiration.inspire_courage_heroics_critical": "Inspire Courage +3",
-    "pf2e_bardic_inspiration.inspire_defense": "Inspire Defense",
+    "pf2e_bardic_inspiration.inspire_defense": "Rallying Anthem",
     "pf2e_bardic_inspiration.inspire_defense_heroics_success": "Inspire Defense +2",
     "pf2e_bardic_inspiration.inspire_defense_heroics_critical": "Inspire Defense +3"
 }

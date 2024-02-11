@@ -1,5 +1,7 @@
 # pf2e-bardic-inspiration
 
+NOTICE: If you are using a version of the Pathfinder 2e system with remastered spell changes, use at least version 1.4.0. Versions 1.3.0 and earlier are incompatible with remaster changes.
+
 Adds a new sub-menu to the token HUD for bardic inspiration.
 
 ![Bardic Inspiration Menu Option](artwork/base-menu-option.png)
